@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Page</title>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/exam-page.css' %}">
+    <script src="{% static 'js/exam-page.js' %}" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="{% static 'images/RS1044_UH_Interlocking_RGB-03.png' %}" alt="UH Logo" class="nav-logo-img">
+            </a>
+            <ul class="nav-links">
+                <li>
+                    <button class="nav-button" onclick="window.location.href='/students/{{ course.id }}/';">
+                        Back to Students
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Exams for {{ course.name }} {{ course.courseid }}-{{course.sectionid}}</h1>
+
+        <!-- Flash Messages -->
+        {% if messages %}
+            <ul style="list-style: none; padding: 0;">
+                {% for message in messages %}
+                    <li style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %};">
+                        {{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- Add Exam Trigger Button -->
+        <button class="button add-button" onclick="document.getElementById('addExamModal').style.display='block'">
+            + Add Exam
+        </button> 
+
+        <!-- Add Exam Modal -->
+        <div id="addExamModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>Add New Exam</h2>
+                <form method="post" action="{% url 'addExam' course.id %}">
+                    {% csrf_token %}
+                    <input type="text" name="exam_name" placeholder="Exam Name" required>
+                    <input id="exam_start" name="exam_start" type="text" placeholder="Start Time" required>
+                    <input id="exam_end" name="exam_end" type="text" placeholder="End Time" required>
+                    <button type="submit" class="button">Submit</button>
+                    <button type="button" class="button cancel-button" onclick="document.getElementById('addExamModal').style.display='none'">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Future Exams -->
+        <h2>Future Exams</h2>
+            <table>
+                <tr>
+                    <th>Exam Name</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Actions</th>
+                </tr>
+            {% for exam in future_exams %}
+            <tr>
+                <td>{{ exam.examName }}</td>
+                <td>{{ exam.examStart|date:"F j, Y" }}</td>
+                <td>{{ exam.examStart|date:"g:i A" }}</td>
+                <td>{{ exam.examEnd|date:"g:i A" }}</td>
+                <td>
+                    <button class="button checkin" onclick="window.location.href='{% url 'checkinPage' exam.examid %}'">Check-In</button>
+                    <form action="{% url 'deleteExam' exam.examid %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button class="button delete-button" type="submit" onclick="return confirm('Delete this exam?')">Delete</button>
+                    </form>
+                </td>
+            </tr>            
+            {% empty %}
+            <tr><td colspan="5">No upcoming exams.</td></tr>
+            {% endfor %}
+        </table>
+
+        <!-- Past Exams -->
+        <h2>Past Exams</h2>
+        <table>
+            <tr>
+                <th>Exam Name</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+            {% for exam in past_exams %}
+            <tr>
+                <td>{{ exam.examName }}</td>
+                <td>{{ exam.examStart|date:"F j, Y" }}</td>
+                <td>
+                    <a class="button" href="{% url 'generate_exam_report' exam.examid %}" target="_blank">View Report</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No past exams.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

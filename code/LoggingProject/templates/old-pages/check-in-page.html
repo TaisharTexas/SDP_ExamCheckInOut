@@ -1,0 +1,89 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-In/Out Page</title>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/checkin.css' %}">
+    
+    <!-- jsQR for QR decoding -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'js/check-in-page.js' %}?v={{ timestamp }}"></script>
+</head>
+
+<body class="bg-gray-100 flex flex-col justify-center items-center min-h-screen">
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="{% static 'images/RS1044_UH_Interlocking_RGB-03.png' %}" alt="UH Logo" class="nav-logo-img">
+            </a>
+            <ul class="nav-links">
+                <li>
+                    <button onclick="window.location.href='/exams/{{ course.id }}/';"
+                        class="nav-button">
+                        Back to Exams
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Container -->
+    <div class="content-box">
+        <h1 class="main-heading">
+            {{ course.name }} {{ course.courseid }} : {{ exam.examName }} 
+        </h1>
+        
+        <p class="subtext">
+            <strong>Start:</strong> {{ exam.examStart|date:"m/d/Y, g:i A" }}
+        </p>
+    
+        <div class="main-form-container">
+            {% if message %}
+                <p id="errorMessage" class="{% if message_class == 'error-message' %}error-text{% else %}success-text{% endif %}">
+                    {{ message }}
+                </p>
+            {% else %}
+                <p id="errorMessage" class="invisible"></p>
+            {% endif %}
+        </div>
+    
+        <form method="POST" class="form-wrapper">
+            {% csrf_token %}
+            <input type="hidden" name="mode" id="mode-field" value="checkin">
+    
+            <div class="toggle-container">
+                <label id="checkin-label" class="label-text">Check-In</label>
+                <label class="switch">
+                    <input type="checkbox" id="mode-switch" name="mode" value="checkout" 
+                        {% if mode == "checkout" %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+                <label id="checkout-label" class="label-text">Check-Out</label>
+            </div>
+    
+            <div id="uh-id-input" class="method-option active">
+                <h4 class="input-heading">Enter UH ID</h4>
+                <input type="text" name="student_id" placeholder="Enter UH ID" class="uh-input">
+                <p class="help-text">Swipe ID card or manual entry</p>
+            </div>
+    
+            <div>
+                <button id="scan-qr-button" type="button" class="qr-btn">
+                    Scan QR Code
+                </button>
+            </div>
+    
+            <video id="qr-video" width="100%" height="auto" autoplay></video>
+    
+            <button type="submit" class="submit-btn">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

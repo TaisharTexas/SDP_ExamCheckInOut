@@ -1,0 +1,92 @@
+{% load static tailwind_tags %} {% tailwind_css %}
+<div class="px-4 sm:px-6 lg:px-8 py-2 flex items-center">
+  <nav class="flex items-center justify-between w-full">
+    <ul class="flex flex-row space-x-4 pl-8 items-center">
+      <!-- Logo  -->
+      <li>
+        <a {% if user.is_authenticated %}
+              href="/courses/"
+              {%else%}
+              href="/"
+            {% endif %}>
+          <img
+            src="{% static 'images/RS1044_UH_Interlocking_RGB-03.png' %}"
+            alt="UH Logo"
+            class="max-h-[48px]"
+          />
+        </a>
+      </li>
+      <li>
+        {% if user.is_authenticated %}
+        <li>
+          <button
+            onclick="window.location.href='/courses/';"
+            class="flex items-center gap-2 text-white text-lg px-4 py-2 rounded-md hover:bg-[#ae0d28] transition"
+          >
+            <img src="{% static 'images/homeicon.png' %}" class="h-5 w-5" alt="Home Icon"> Home
+          </button>
+        </li>
+      {% endif %}
+
+      </li>      
+    </ul>
+
+    <!-- Right-Side Buttons -->
+    <ul class="flex flex-row ml-auto space-x-4 pr-4">
+      {% if enrolled_display %}
+        {% if request.user.role == 'professor' %}
+        <li>
+          <button
+            onclick="window.location.href='/enrolled-students/';"
+            class="flex items-center gap-2 text-white text-lg px-4 py-2 rounded-md hover:bg-[#ae0d28]
+            {% if 'enrolled-students' in current_url %}bg-[#8B0B21]{% else %}hover:bg-[#ae0d28]{% endif %} transition">
+            Your Students
+          </button>
+        </li>
+        {% endif %}
+      {% endif %}      
+      {% if students_url %}
+      <li>
+        <button
+          onclick="window.location.href='{{ students_url }}';"
+          class="flex items-center gap-2 text-white text-lg px-4 py-2 rounded-md hover:bg-[#ae0d28]
+          {% if 'students' in current_url %}bg-[#8B0B21]{% else %}hover:bg-[#ae0d28]{% endif %} transition">
+          <img src="{% static 'images/usericon1.png' %}" alt="Students Icon" class="h-5 w-5">
+          Course Students
+        </button>
+      </li>
+      {% endif %}
+      <!-- {% if course_tas_url %}
+        <li>
+          <button
+            onclick="window.location.href='{% url 'course-tas' course.id %}';"
+            class="flex items-center gap-2 text-white text-lg px-4 py-2 rounded-md hover:bg-[#ae0d28]
+            {% if 'course-tas' in current_url %}bg-[#8B0B21]{% else %}hover:bg-[#ae0d28]{% endif %} transition">
+            Course TAs
+          </button>
+        </li>
+      {% endif %} -->
+      {% if exams_url %}
+      <li>
+        <button
+          onclick="window.location.href='{{ exams_url }}';"
+          class="flex items-center gap-2 text-white text-lg px-4 py-2 rounded-md hover:bg-[#ae0d28]
+          {% if 'exams' in current_url %}bg-[#8B0B21]{% else %}hover:bg-[#ae0d28]{% endif %} transition">
+          <img src="{% static 'images/icons8-report-24.png' %}" alt="Students Icon" class="h-5 w-5">
+          Exams
+        </button>
+      </li>
+      {% endif %}
+      {% if user.is_authenticated %}
+      <li>
+        <button
+          onclick="window.location.href='{% url 'logout' %}';"
+          class="flex items-center gap-2 text-white text-lg px-4 py-2 rounded-md hover:bg-[#ae0d28] transition">
+          <img src="{% static 'images/logoutlogo.png' %}" alt="Logoout Icon" class="h-6 w-6">
+          Logout
+        </button>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>

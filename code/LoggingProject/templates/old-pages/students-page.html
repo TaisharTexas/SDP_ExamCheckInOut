@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+ {% block title %}Student Roster{%endblock %} 
+{% block style %}{% endblock %} 
+{% block content %}
+
+<div class="container">
+  <h1>Students for {{ course.name }} ({{ course.courseid }})</h1>
+  {% if messages %}
+  <div>
+    {% for message in messages %}
+    <p
+      style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};"
+    >
+      {{ message }}
+    </p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Form for adding a new student -->
+  <form method="POST" action="{% url 'add_student' course.id %}" class="mb-7">
+    {% csrf_token %}
+    <input type="text" name="student_id" placeholder="Student ID" required />
+    <input
+      type="text"
+      name="student_name"
+      placeholder="Student Name"
+      required
+    />
+    <button class="btn cream-btn" type="submit">Add Student</button>
+  </form>
+
+  <!-- CSV Import Form (Restored) -->
+  <h2>Import Students from CSV</h2>
+  <form
+    method="POST"
+    enctype="multipart/form-data"
+    action="{% url 'import_students' course.id %}"
+  >
+    {% csrf_token %}
+    <input type="file" name="csv_file" accept=".csv" required />
+    <button class="btn cream-btn" type="submit">Import CSV</button>
+  </form>
+  <table>
+    <tr>
+      <th>Student ID</th>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+    {% for student in students %}
+    <tr class="hover:bg-gray-50">
+      <td>{{ student.UID }}</td>
+      <td>{{ student.name }}</td>
+      <td>
+        {% if student.UID %}
+        <form
+          method="POST"
+          action="{% url 'remove_student' course.id student.UID %}"
+          style="display: inline"
+          onsubmit="return confirm('Are you sure you want to remove this student?');"
+        >
+          {% csrf_token %}
+          <button class="btn red-btn" type="submit">Remove</button>
+        </form>
+        {% else %}
+        <p>Error: Student ID missing</p>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="3">No students found.</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %} {% block scripts %}{% endblock %}

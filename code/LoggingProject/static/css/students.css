@@ -1,0 +1,51 @@
+@import url(standard.css);
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 2px;
+    border: 1px solid #ddd;
+}
+th {
+    background-color: #00B388;
+    color: white;
+}
+.button {
+    display: inline-block;
+    width: 45%;
+    margin: 10px;
+    padding: 10px;
+    background: #00B388;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+}
+.btndiv {
+    justify-content: right;
+}
+.button:hover {
+    background: #019874;
+}
+.remove-button {
+    background: #C8102E;
+}
+.remove-button:hover {
+    background: #aa0e28;
+}

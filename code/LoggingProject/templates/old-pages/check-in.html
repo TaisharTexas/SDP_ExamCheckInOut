@@ -1,0 +1,215 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-In/Out Page</title>
+    <!-- Keep your CSS here -->
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding-top: 100px;
+            padding-bottom: 100px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            text-align: center;
+        }
+        .method-option {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .method-header {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .instructions {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .error-message {
+            color: red;
+        }
+        .success-message {
+            color: green;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        /* Toggle Switch Styling */
+        .option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        /* Toggle Labels */
+        .toggle-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #888; /* Default unselected color */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Toggle Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ddd; /* No color change */
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+    </style>
+    <!-- Link to your external JS file at the end of body -->
+    <script src="{% static 'js/check-in-page.js' %}"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">UH Portal</a>
+            <ul class="nav-links">
+                <!-- <li><a href="/dashboard/">Dashboard</a></li>
+                <li><a href="/exams/{{ course.courseid }}/">Exams</a></li>
+                <li><a href="/profile/{{ course.courseid }}/">Profile</a></li>
+                <li><a href="/logout/">Logout</a></li> -->
+                <li><button class="nav-button" onclick="window.location.href='/exams/{{ course.courseid }}/';">Back to Exams</button></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Check-In for {{ exam.examName }} for {{ course.courseid }} {{ course.name }}</h1>
+        
+        
+        <!-- <h2>Course Details</h2> -->
+        <!-- <p><strong>Course Name:</strong> {{ course.name }}</p> -->
+        <!-- <p><strong>Course ID:</strong> {{ course.courseid }}</p> -->
+
+        <!-- <h2>Exam Details</h2> -->
+        <!-- <p><strong>Exam Name:</strong> {{ exam.examName }}</p> -->
+        <!-- <p><strong>Section:</strong> {{ exam.sectionid }}</p> -->
+        <p><strong>Exam Start:</strong> {{ exam.examStart }}</p>
+        <!-- <p><strong>Exam End:</strong> {{ exam.examEnd }}</p> -->
+
+        {% if message %}
+            <p id="errorMessage" class="{{ message_class }}">{{ message }}</p>
+        {% else %}
+            <p id="errorMessage"></p>
+        {% endif %}
+
+        <h2>Student Check-In/Out</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="mode" id="mode-field" value="checkin">
+            
+            <!-- Toggle Switch for Check-In / Check-Out -->
+            <div class="option">
+                <label class="toggle-label" id="checkin-label">Check-In</label>
+                <label class="switch">
+                    <input type="checkbox" id="mode-switch" name="mode" value="checkout" {% if mode == "checkout" %}checked{% endif %}>
+                    <span class="slider round"></span>
+                </label>
+                <label class="toggle-label" id="checkout-label">Check-Out</label>
+            </div>
+
+            <h3>Choose Check-In Method</h3>
+
+            <!-- Toggle Switch for Check-In Method -->
+            <div class="option">
+                <label class="toggle-label" id="uhid-label">UH ID</label>
+                <label class="switch">
+                    <input type="checkbox" id="method-switch" name="checkin-method" value="uh-go-id">
+                    <span class="slider round"></span>
+                </label>
+                <label class="toggle-label" id="qrcode-label">QR Code</label>
+            </div>
+        
+            <!-- UH ID input field -->
+            <div class="method-option active" id="uh-id-input">
+                <h4 class="method-header">Enter UH ID</h4>
+                <input type="text" name="student_id" placeholder="Enter UH ID">
+                <div class="instructions">Manually enter your UH ID number.</div>
+            </div>
+        
+            <!-- QR Code scanner option -->
+            <div class="method-option" id="uh-go-id-camera" style="display: none;">
+                <h4 class="method-header">Scan QR Code</h4>
+                <button type="button" id="qrScanBtn">Scan QR Code</button>
+                <div class="instructions">Click to open the camera and scan your UH Go ID QR code.</div>
+            </div>
+        
+            <button class="button" type="submit">Submit</button>
+        </form>
+
+
+        <br>
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+@import url(standard.css);
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    text-align: center;
+    
+}
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    color: #333;
+}
+.course-list {
+    list-style-type: none;
+    padding: 0;
+}
+.course-list li {
+    margin: 10px 0;
+}
+.input-field {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.button {
+    display: block;
+    width: 80%;
+    margin: 10px auto;
+    padding: 15px;
+    background: #00B388;
+    color: black;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+}
+.button:hover {
+    background: #019c78;
+}
+
+.remove-button {
+    background: #C8102E;
+}
+.remove-button:hover {
+    background: #ae0d28;
+}
+
+.add-course{
+    background: #FFF9D9;
+}
+.add-course:hover{
+    background: #dbd6bc;
+}
+
+.edit-course{
+    background: #F6BE00;
+}
+.edit-course:hover{
+    background: #d4a301;
+}

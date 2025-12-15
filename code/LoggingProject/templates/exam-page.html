@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Exam View {% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %} 
+
+<div class="max-w-3xl mx-auto my-12 bg-white p-5 rounded-lg shadow flex flex-col justify-center items-center text-center">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Exams for {{ course.name }} {{ course.courseid }}-{{course.sectionid}}</h1>
+
+    <!-- Flash Messages -->
+    {% if messages %}
+        <ul style="list-style: none; padding: 0;">
+            {% for message in messages %}
+                <li style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %};">
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Add Exam Trigger Button -->
+    <button class="btn green-btn" onclick="document.getElementById('addExamModal').style.display='block'">
+        + Add Exam
+    </button> 
+
+    <!-- Add Exam Modal -->
+    <div id="addExamModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Add New Exam</h2>
+            <form method="post" action="{% url 'addExam' course.id %}">
+                {% csrf_token %}
+                <input type="text" name="exam_name" placeholder="Exam Name" required>
+                <input id="exam_start" name="exam_start" type="text" placeholder="Start Time" required>
+                <input id="exam_end" name="exam_end" type="text" placeholder="End Time" required>
+                <button type="submit" class="btn green-btn">Submit</button>
+                <button type="button" class="btn red-btn" onclick="document.getElementById('addExamModal').style.display='none'">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Future Exams -->
+    <h2 class="text-xl font-semibold text-gray-700 mt-10 mb-4">Exams</h2>
+    <div class="overflow-x-auto w-full mb-10">
+        <table class="min-w-full table-auto text-sm text-left border border-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2">Exam Name</th>
+                    <th class="px-4 py-2">Date</th>
+                    <th class="px-4 py-2">Start Time</th>
+                    <th class="px-4 py-2">End Time</th>
+                    <th class="px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for exam in future_exams %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2">
+                        {{ exam.examName }}
+                        {% if exam.has_started %}
+                            {% if exam.has_ended %}
+                            <div class="text-sm text-red-600 font-medium">Finished</div>
+                            {% else %}
+                                <div class="text-sm text-emerald-600 font-medium">In Progress</div>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2">{{ exam.examStart|date:"F j, Y" }}</td>
+                    <td class="px-4 py-2">{{ exam.examStart|date:"g:i A" }}</td>
+                    <td class="px-4 py-2">{{ exam.examEnd|date:"g:i A" }}</td>
+                    <td class="px-4 py-2 space-x-2">
+                        <button 
+                        {% if exam.can_checkin %}
+                            class="inline-block px-4 py-2.5 m-1 text-white rounded cursor-pointer no-underline bg-[#F6BE00] hover:bg-[#d6a503]"                       
+                            onclick="window.location.href='{% url 'checkinPage' exam.examid %}'" >Check-In/Out</button>
+                        {% else %}
+                            class="inline-block px-4 py-2.5 m-1 text-white rounded cursor-not-allowed bg-gray-400" disabled >Check-In</button>
+                        {% endif %}
+                        <form action="{% url 'deleteExam' exam.examid %}" method="post" class="inline">
+                            {% csrf_token %}
+                            <button class="btn red-btn" type="submit" onclick="return confirm('Delete this exam?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="px-4 py-4 text-center">No upcoming exams.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Past Exams -->
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Past Exams</h2>
+    <div class="overflow-x-auto w-full">
+        <table class="min-w-full table-auto text-sm text-left border border-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2">Exam Name</th>
+                    <th class="px-4 py-2">Date</th>
+                    <th class="px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for exam in past_exams %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2">{{ exam.examName }}</td>
+                    <td class="px-4 py-2">{{ exam.examStart|date:"F j, Y" }}</td>
+                    <td class="px-4 py-2">
+                        <!-- <a class="btn cream-btn" href="{% url 'generate_exam_report' exam.examid %}" target="_blank">View Report</a> -->
+                        <a class="btn cream-btn" href="{% url 'view_exam_report' exam.examid %}" target="_blank">View Report</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="px-4 py-4 text-center">No past exams.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %} 
+<script src="{% static 'js/exam-page.js' %}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}
+

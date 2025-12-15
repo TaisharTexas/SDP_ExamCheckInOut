@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management</title>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/course-page.css' %}">
+    <script src="{% static 'js/course-page.js' %}"></script>
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="{% static 'images/RS1044_UH_Interlocking_RGB-03.png' %}" alt="UH Logo" class="nav-logo-img">
+            </a>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Available Courses</h1>
+
+        <!-- displays Error messages for create course form -->
+        {% if messages %}
+    <ul style="list-style: none; color: red; padding: 0;">
+        {% for message in messages %}
+            <li style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %};">
+                {{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+        {% endif %}
+
+        <!-- Course List -->
+        <ul class="course-list">
+            {% for course in courses %}
+                {% if course.courseid %}
+                    <li>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <!-- Course Button -->
+                            <a href="{% url 'studentPage' course.id %}" class="button" style="flex-grow: 1;">
+                                {{ course.name }} {{ course.courseid }}-{{ course.sectionid }}
+                            </a>
+        
+                            <!-- Edit Button -->
+                            <button type="button" class="button edit-course" style="width: 50px; font-weight: bold;"
+                                onclick="openEditModal('{{ course.id }}', '{{ course.name }}', '{{ course.courseid }}', '{{ course.sectionid }}')" title="Edit Course">
+                                ✏️
+                            </button>
+        
+                            <!-- Delete Button -->
+                            <form method="post" action="{% url 'deleteCourse' course.id %}" onsubmit="return confirm('Are you sure you want to delete this course?');">
+                                {% csrf_token %}
+                                <button type="submit" class="button remove-button" style="width: 50px;">❌</button>
+                            </form>
+                        </div>
+                    </li>
+                {% else %}
+                    <li><p>Error: Course ID missing for "{{ course.name }}"</p></li>
+                {% endif %}
+            {% empty %}
+                <p>No courses available.</p>
+            {% endfor %}
+        </ul>        
+
+        <!-- Add Course Trigger Button -->
+        <button class="button add-course" onclick="document.getElementById('addCourseModal').style.display='block'">Add New Course</button>
+
+        <!-- Hidden Modal -->
+        <div id="addCourseModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 10; padding-top: 100px;">
+            <div style="background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px black; position: relative;">
+                <h2>Add a New Course</h2>
+                <form method="post" action="{% url 'addCourse' %}">
+                    {% csrf_token %}
+                    <input class="input-field" type="text" name="course_name" placeholder="Course Name" required>
+                    <input class="input-field" type="text" name="course_id" placeholder="Course ID" required>
+                    <input class="input-field" type="text" name="section_id" placeholder="Section ID" required>
+                    <button class="button" type="submit">Submit</button>
+                </form>
+                <button onclick="document.getElementById('addCourseModal').style.display='none'" class="button remove-button" style="margin-top: 10px;">Cancel</button>
+            </div>
+        </div>
+        <!-- Edit Course Modal -->
+        <div id="editCourseModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 10; padding-top: 100px;">
+            <div style="background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px black; position: relative;">
+                <h2>Edit Course</h2>
+                <form method="post" action="{% url 'editCourse' %}">
+                    {% csrf_token %}
+                    <input id="edit_course_name" class="input-field" type="text" name="course_name" required>
+
+                 <!-- Hidden original ID (used to lookup existing course) -->
+                 <input type="hidden" name="course_id" id="original_course_id">
+
+                <!-- Editable new ID -->
+                <input id="edit_course_id" class="input-field" type="text" name="course_code" required>
+
+                    <input id="edit_section_id" class="input-field" type="text" name="section_id" required>
+                    <button class="button" type="submit">Update</button>
+                </form>
+                <button onclick="document.getElementById('editCourseModal').style.display='none'" class="button remove-button" style="margin-top: 10px;">Cancel</button>
+            </div>
+        </div>
+
+</body>
+</html>

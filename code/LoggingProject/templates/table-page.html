@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Report</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h2 {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Database Report</h1>
+
+    <!-- Students Table -->
+    <h2>Students</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>UID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if students %}
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.UID }}</td>
+                    <td>{{ student.name }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="3" style="text-align:center;">No students found</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Courses Table -->
+    <h2>Courses</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Course ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if courses %}
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.courseid }}</td>
+                    <td>{{ course.name }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" style="text-align:center;">No courses found</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Users Table -->
+    <h2>Users</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if users %}
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.userId }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" style="text-align:center;">No users found</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Exams Table -->
+    <h2>Exams</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Exam ID</th>
+                <th>Course</th>
+                <th>Section ID</th>
+                <th>Exam Name</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if exams %}
+                {% for exam in exams %}
+                <tr>
+                    <td>{{ exam.examid }}</td>
+                    <td>{{ exam.course.name }}</td>
+                    <td>{{ exam.sectionid }}</td>
+                    <td>{{ exam.examName }}</td>
+                    <td>{{ exam.examStart }}</td>
+                    <td>{{ exam.examEnd }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No exams found</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+</body>
+</html>

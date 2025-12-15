@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Checkin-out Page {% endblock %}
+{% block style %}
+    <style src="{% static 'css/checkin.css' %}"></style>
+{% endblock %}
+
+{% block content %} 
+
+<div class="flex flex-col justify-center items-center min-h-screen bg-gray-50">
+
+<div class="bg-white p-16 rounded-lg shadow-lg mt-24 max-w-4xl text-center">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">
+        {{ course.name }} {{ course.courseid }} : {{ exam.examName }} 
+    </h1>
+    
+    <p class="text-gray-500 mt-2">
+        <strong>Start:</strong> {{ exam.examStart|date:"m/d/Y, g:i A" }}
+    </p>
+
+    <div class="main-form-container">
+        {% if message %}
+            <p id="errorMessage" class="{% if message_class == 'error-message' %}error-text{% else %}success-text{% endif %}">
+                {{ message }}
+            </p>
+        {% else %}
+            <p id="errorMessage" class="invisible"></p>
+        {% endif %}
+    </div>
+
+    {% if True %}
+    <form method="POST" class="form-wrapper flex items-center">
+        {% csrf_token %}
+        <input type="hidden" name="mode" id="mode-field" value="checkin">
+
+        <div class="toggle-container">
+            <label id="checkin-label" class="label-text">Check-In</label>
+            <label class="switch">
+                <input type="checkbox" id="mode-switch" name="mode" value="checkout" 
+                    {% if mode == "checkout" %}checked{% endif %}>
+                <span class="slider"></span>
+            </label>
+            <label id="checkout-label" class="label-text">Check-Out</label>
+        </div>
+
+        <div id="uh-id-input" class="method-option active">
+            <h4 class="input-heading">Enter UH ID</h4>
+            <input type="text" name="student_id" placeholder="Enter UH ID" class="uh-input">
+            <p class="help-text">Swipe ID card or manual entry</p>
+        </div>
+
+        
+        <!-- <div>
+            <button id="scan-qr-button" type="button" class="qr-btn">
+                Scan QR Code
+            </button>
+        </div>
+
+        <video id="qr-video" width="100%" height="auto" autoplay></video> -->
+
+        <button type="submit" class="inline-block px-4 py-2.5 m-1 text-white bg-amber-400 hover:bg-amber-500 rounded cursor-pointer text-xl">Submit</button>
+
+    </form>
+    {% else %}
+    <h1 class="text-2xl font-bold text-red-500 mb-4">
+        DISABLED
+    </h1>
+    {% endif %}
+</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- jsQR for QR decoding -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" defer></script>
+<!-- Custom JS -->
+<script src="{% static 'js/check-in-page.js' %}?v={{ timestamp }}" defer></script>
+{% endblock %}

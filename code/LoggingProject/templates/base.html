@@ -1,0 +1,30 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block style %}{% endblock %}
+
+
+    <title>{% block title %}Page{% endblock %}</title>
+    {% tailwind_css %}
+</head>
+    
+<body class="min-h-screen flex flex-col bg-gray-100 text-gray-900 font-body">
+    <header class="bg-[#C8102E] shadow-md">
+        {% include 'includes/navbar.html' with course_display=course_display students_url=students_url exams_url=exams_url current_url=current_url%}
+    </header>
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t py-4 text-center text-sm text-gray-500">
+        © 2025 SDP Swift Checkin App
+    </footer>
+    
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

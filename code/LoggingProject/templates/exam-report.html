@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Exam Report{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto my-10 bg-white p-6 rounded shadow">
+  <h2 class="text-2xl font-bold text-center mb-6">Exam Report: {{ exam.examName }}</h2>
+
+  <div class="text-right mb-4">
+    <a href="{% url 'generate_exam_report' exam.examid %}?download" class="btn green-btn">
+      ⬇ Download CSV Report
+    </a>
+  </div>
+
+  <table class="min-w-full table-auto border border-gray-200 text-sm text-left">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-2">First Name</th>
+        <th class="px-4 py-2">Last Name</th>
+        <th class="px-4 py-2">Student ID</th>
+        <th class="px-4 py-2">Check-In</th>
+        <th class="px-4 py-2">Check-Out</th>
+        <th class="px-4 py-2">Is Late?</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for c in checkins %}
+      <tr>
+        <td class="px-4 py-2">{{ c.student.fname }}</td>
+        <td class="px-4 py-2">{{ c.student.lname }}</td>
+        <td class="px-4 py-2">{{ c.student.UID }}</td>
+        <td class="px-4 py-2">{{ c.checkin }}</td>
+        <td class="px-4 py-2">{{ c.checkout|default:"N/A" }}</td>
+        <td class="px-4 py-2">{% if c.isLate %}Yes{% else %}No{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

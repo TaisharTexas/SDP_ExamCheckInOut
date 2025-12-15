@@ -1,0 +1,300 @@
+@import "tailwindcss";
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+
+@layer{
+    h1 {
+        font-size: var(--text-2xl);
+        color: #333;
+        text-align: center;
+        font-weight: bold;
+        font-size: 40px;
+    }
+    h2 {
+        font-size: var(--text-xl);
+        text-align: center;
+        font-weight: bold;
+        font-size: 30px;
+    }
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    th {
+        background-color: #00B388;
+        color: white;
+    }
+    
+}
+
+@layer components {
+    /* .test-box {
+        @apply bg-blue-500 text-white p-4 rounded;
+    } */
+    .content-block{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .container{
+        max-width: 600px;
+        margin: 50px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .course-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    .course-list li {
+        margin: 10px 0;
+    }
+    .input-field {
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    /* Button Styling */
+    .btn {
+        display: inline-block;
+        padding: 10px 15px;
+        margin: 5px;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: var(--text-xl);
+        
+    }
+    .green-btn{
+        background-color: #00B388;
+    }
+    .green-btn:hover{
+        background-color: #019774;
+    }
+    .red-btn{
+        background-color: #C8102E;
+    }
+    .red-btn:hover {
+        background-color: #aa0d27;
+    }
+    .gold-btn{
+        background: #F6BE00;
+    }
+    .gold-btn:hover{
+        background: #d4a301;
+    }
+    .cream-btn{
+        background: #FFF9D9;
+        color: black;
+    }
+    .cream-btn:hover{
+        background: #dbd6bc;
+    }
+    .qr-btn {
+        width: 10rem;
+        background-color: #4299e1;
+        color: white;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+    .qr-btn:hover {
+        background-color: #3182ce;
+    }
+    
+
+    .exam-form input {
+        padding: 10px;
+        margin: 5px;
+        width: 30%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    /* Modal Styling */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        z-index: 20;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.5);
+        padding-top: 100px;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 400px;
+        box-shadow: 0px 0px 10px black;
+        text-align: center;
+    }
+
+    .modal-content input {
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    /* QR Styling */
+    .content-box {
+        background-color: white;
+        padding: 4rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        margin-top: 6rem;
+        max-width: 64rem;
+        text-align: center;
+    }
+    .main-heading {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 2rem;
+    }
+    .subtext {
+        color: #718096;
+        margin-top: 0.5rem;
+    }
+    .error-text {
+        margin-top: 0.75rem;
+        color: #f56565;
+    }
+    .success-text {
+        margin-top: 0.75rem;
+        color: #48bb78;
+    }
+    .invisible {
+        visibility: hidden;
+    }
+    .form-wrapper {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .input-heading {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: #2d3748;
+    }
+    .uh-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        outline: none;
+    }
+    .uh-input:focus {
+        border-color: #38a169;
+        box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.5);
+    }
+    .help-text {
+        font-size: 0.875rem;
+        color: #a0aec0;
+        margin-top: 0.25rem;
+    }
+    #qr-video {
+        display: none;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    .toggle-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .label-text {
+        font-weight: bold;
+        color: #4a4a4a;
+    }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 56px;
+        height: 28px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #00B388;
+        transition: 0.4s;
+        border-radius: 34px;
+    }
+    
+    .slider::before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 3px;
+        top: 3px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+    }
+    
+    /* When checked - turn background red and slide knob */
+    .switch input:checked + .slider {
+        background-color: #C8102E;
+    }
+    .switch input:checked + .slider::before {
+        transform: translateX(28px);
+    }
+    .main-form-container {
+        min-height: 40px;
+        max-height: 300px;
+        min-width: 350px;
+        max-width: 600px;
+        overflow-y: auto;
+    }
+}
+
+
+
+
+/* @font-face {
+    font-family: 'UH_body';
+    src: url('/static/fonts/CrimsonText-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'UH_header';
+    src: url('/static/fonts/LeagueGothic-Regular-VariableFont_wdth.ttf') format('truetype');
+} */

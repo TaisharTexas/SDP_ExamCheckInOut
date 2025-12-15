@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register Page{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto py-16 max-w-md">
+  <div class="bg-white p-8 rounded-2xl shadow-lg">
+
+    <!-- Mascot + Headers -->
+    <div class="flex flex-col items-center mb-6">
+      <img src="{% static 'images/UH_mascot-removebg-preview.png' %}"
+           alt="UH Mascot"
+           class="w-506 h-506 object-contain mb-6" />
+      <h1 class="text-2xl font-bold text-gray-800 text-center">
+        Welcome to the Exam Checkin Software!
+      </h1>
+      <p class="text-gray-600 text-center">Create an Account</p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+      <ul class="mb-6 space-y-2">
+        {% for message in messages %}
+          <li class="text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
+            {{ message }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <!-- Registration Form -->
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+
+      {{ form.first_name }}
+      {{ form.last_name }}
+      {{ form.email }}
+      {{ form.role }}
+
+      <!-- Password Field -->
+      <div class="relative">
+        {{ form.password1 }}
+        <button type="button"
+                class="absolute inset-y-0 right-3 flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full shadow-sm hover:bg-indigo-50 transition"
+                onclick="togglePwd('id_password1', this)">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-5 w-5 eye-icon text-gray-500"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round"
+               viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-5 w-5 eye-off-icon text-gray-500 hidden"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round"
+               viewBox="0 0 24 24">
+            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8"/>
+            <path d="M1 1l22 22"/>
+            <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24"/>
+            <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="relative">
+        {{ form.password2 }}
+        <button type="button"
+                class="absolute inset-y-0 right-3 flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full shadow-sm hover:bg-indigo-50 transition"
+                onclick="togglePwd('id_password2', this)">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-5 w-5 eye-icon text-gray-500"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round"
+               viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-5 w-5 eye-off-icon text-gray-500 hidden"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round"
+               viewBox="0 0 24 24">
+            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8"/>
+            <path d="M1 1l22 22"/>
+            <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24"/>
+            <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Password Requirements -->
+      <ul id="pwd-requirements" class="mt-4 space-y-2">
+        <li data-check="length"
+            class="flex items-center p-3 border-l-4 border-red-600 bg-gray-50 rounded-md">
+          <svg class="h-5 w-5 mr-3 check-icon opacity-0 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 00-1.414 0L7 13.586
+                     4.707 11.293a1 1 0 00-1.414 1.414l3 3
+                     a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                  clip-rule="evenodd"/>
+          </svg>
+          <span>At least 8 characters</span>
+        </li>
+        <li data-check="number"
+            class="flex items-center p-3 border-l-4 border-red-600 bg-gray-50 rounded-md">
+          <svg class="h-5 w-5 mr-3 check-icon opacity-0 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 00-1.414 0L7 13.586
+                     4.707 11.293a1 1 0 00-1.414 1.414l3 3
+                     a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                  clip-rule="evenodd"/>
+          </svg>
+          <span>Contains a number</span>
+        </li>
+        <li data-check="symbol"
+            class="flex items-center p-3 border-l-4 border-red-600 bg-gray-50 rounded-md">
+          <svg class="h-5 w-5 mr-3 check-icon opacity-0 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 00-1.414 0L7 13.586
+                     4.707 11.293a1 1 0 00-1.414 1.414l3 3
+                     a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                  clip-rule="evenodd"/>
+          </svg>
+          <span>Contains a symbol</span>
+        </li>
+        <li data-check="match"
+            class="flex items-center p-3 border-l-4 border-red-600 bg-gray-50 rounded-md">
+          <svg class="h-5 w-5 mr-3 check-icon opacity-0 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 00-1.414 0L7 13.586
+                     4.707 11.293a1 1 0 00-1.414 1.414l3 3
+                     a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                  clip-rule="evenodd"/>
+          </svg>
+          <span>Passwords match</span>
+        </li>
+      </ul>
+
+      <!-- Submit -->
+      <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-full transition">
+        Create Account
+      </button>
+
+      <p class="text-center text-sm text-gray-600 mt-4">
+        Already have an account?
+        <a href="/" class="text-indigo-600 hover:underline">Log In</a>
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  function togglePwd(fieldId, btn) {
+    const inp  = document.getElementById(fieldId);
+    const show = inp.type === 'password';
+    inp.type   = show ? 'text' : 'password';
+    btn.querySelector('.eye-icon')  .classList.toggle('hidden', !show);
+    btn.querySelector('.eye-off-icon').classList.toggle('hidden', show);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const p1 = document.getElementById('id_password1');
+    const p2 = document.getElementById('id_password2');
+
+    function validate() {
+      const v = p1.value;
+      const rules = {
+        length: v.length >= 8,
+        number: /\d/.test(v),
+        symbol: /[!@#\$%\^&\*]/.test(v),
+        match:  v === p2.value && v.length > 0
+      };
+
+      Object.entries(rules).forEach(([k, ok]) => {
+        const li = document.querySelector(`[data-check="${k}"]`);
+        const ic = li.querySelector('.check-icon');
+        li.classList.toggle('border-green-600', ok);
+        li.classList.toggle('border-red-600', !ok);
+        ic.classList.toggle('opacity-100', ok);
+        ic.classList.toggle('opacity-0', !ok);
+      });
+    }
+
+    p1.addEventListener('input', validate);
+    p2.addEventListener('input', validate);
+  });
+</script>
+{% endblock scripts %}

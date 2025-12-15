@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Student Roster{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto my-12 bg-white p-5 rounded-lg shadow flex flex-col justify-center items-center text-center">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Students for {{ course.name }} ({{ course.courseid }})</h1>
+    
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <p class="{% if message.tags == 'error' %}text-red-600{% else %}text-green-600{% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <!--  Resolve name conflict when manually adding student  -->
+    {% if incoming_name_conflict %}
+        <div class="mb-7 mt-5 bg-yellow-50 border border-yellow-300 text-yellow-800 px-6 py-4 rounded shadow-md w-full max-w-2xl text-left relative">
+            <!-- Close Button (X) -->
+            <button onclick="this.parentElement.style.display='none'" class="absolute top-2 right-2 text-xl font-bold text-gray-500" style="border: none; background: none; z-index: 10;">
+                X
+            </button>
+            <h2 class="text-lg font-semibold mb-2">Name Conflict Detected</h2>
+            <p class="mb-3">
+                Student ID <strong>{{ incoming_name_conflict.student_id }}</strong> already exists but has a name mismatch.
+            </p>
+            <ul class="mb-3">
+                <li><strong>Current in DB:</strong> {{ incoming_name_conflict.db_fname }} {{ incoming_name_conflict.db_lname }}</li>
+                <li><strong>Submitted:</strong> {{ incoming_name_conflict.incoming_fname }} {{ incoming_name_conflict.incoming_lname }}</li>
+            </ul>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <!-- Option 1: Use submitted name (overwrite DB) -->
+                <form method="POST" action="{% url 'add_student' course.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="student_id" value="{{ incoming_name_conflict.student_id }}">
+                    <input type="hidden" name="student_fname" value="{{ incoming_name_conflict.incoming_fname }}">
+                    <input type="hidden" name="student_lname" value="{{ incoming_name_conflict.incoming_lname }}">
+                    <input type="hidden" name="confirm_name_choice" value="use_new">
+                    <button type="submit" class="bg-[#00B388] hover:bg-[#019774] text-white px-4 py-2 rounded transition duration-200">
+                        ✅ Use Submitted Name
+                    </button>
+                </form>
+
+                <!-- Option 2: Keep current DB name -->
+                <form method="POST" action="{% url 'add_student' course.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="student_id" value="{{ incoming_name_conflict.student_id }}">
+                    <input type="hidden" name="student_fname" value="{{ incoming_name_conflict.db_fname }}">
+                    <input type="hidden" name="student_lname" value="{{ incoming_name_conflict.db_lname }}">
+                    <input type="hidden" name="confirm_name_choice" value="keep_existing">
+                    <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition duration-200">
+                        🛑 Keep Existing Name
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Form for adding a new student -->
+    <div class ='mb-7 mt-7 px-4'>
+        <form method="POST" action="{% url 'add_student' course.id %}" class="flex flex-col gap-2 items-center">
+            {% csrf_token %}
+            <div class="flex flex-col sm:flex-row gap-2 items-center">
+                <input type="text" name="student_id" placeholder="Student ID" required
+                    class="w-full p-2 border border-gray-300 rounded">
+                <input type="text" name="student_fname" placeholder="First Name" required
+                    class="w-full p-2 border border-gray-300 rounded">          
+                <input type="text" name="student_lname" placeholder="Last Name" required
+                    class="w-full p-2 border border-gray-300 rounded">  
+            </div>                   
+            <button class="bg-yellow-100 hover:bg-yellow-200 text-gray-800 py-3 px-4 rounded transition duration-200" type="submit">
+                Add Student
+            </button>
+        </form>
+    </div>
+
+    <!-- CSV Import Form -->
+    <div class="mb-7 mt-7">
+        <h2 class="text-xl font-semibold mb-2">Import Students from CSV</h2>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'import_students' course.id %}" class="flex flex-col sm:flex-row gap-2 items-center">
+            {% csrf_token %}
+            <input type="file" name="csv_file" accept=".csv" required class="border border-gray-300 p-2 rounded">
+            <button class="bg-yellow-100 hover:bg-yellow-200 text-gray-800 py-2 px-4 rounded transition duration-200" type="submit">
+                Import CSV
+            </button>
+        </form>
+    </div>
+
+    <!-- Hidden Modal (edit student info) -->
+    <div id="edit_student" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 10; padding-top: 100px;">
+        <div style="background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px black; position: relative;">
+            <h2>Edit Student Information</h2>
+            <form method="post" action="" id="edit_student_form">
+                {% csrf_token %}
+                <input class="w-[90%] px-3 py-2 my-2 border border-gray-300 rounded" type="text" name="student_first_name" placeholder="Student First Name" title="Edit Student First Name" required>
+                <input class="w-[90%] px-3 py-2 my-2 border border-gray-300 rounded" type="text" name="student_last_name" placeholder="Student Last Name" title="Edit Student Last Name" required>
+                <button class="btn green-btn" type="submit">Submit</button>
+            </form>
+            <button onclick="document.getElementById('edit_student').style.display='none'" class="btn red-btn" style="margin-top: 10px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Students Table -->
+    <div x-data="{ search: '' }" class="overflow-x-auto w-full mb-6 mt-7 flex flex-col">
+        <div class="w-full flex flex-row justify-between">
+            <!-- Search by UID (alpineJS) -->
+            <div class="relative w-full max-w-[40px]">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
+                </div>
+                <input 
+                type="text" 
+                x-model="search" 
+                placeholder="Search by ID / Name..." 
+                class="border border-gray-300 rounded px-3 py-2 pl-10 pr-4 w-64"/>
+            </div>
+            <h2 class="text-lg font-semibold mr-2 mt-4">Student Count: {{ students_count }}</h2>
+        </div>
+
+        <table id="student-table" class="w-full border-collapse">
+            <thead>
+                <tr>
+                    <th class="bg-[#00B388] text-white py-1 px-2 border border-gray-300">#</th>
+                    
+                    <!-- NAME COLUMN HEADER -->
+                    <th class="cursor-pointer bg-[#00B388] text-white py-1 px-4 border border-gray-300"
+                        onclick="sortTableByColumn('student-table', 1)">
+                        Name 
+                        <svg class="sort-icon inline w-4 h-4 ml-1 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path class="asc-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                        <path class="desc-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </th>
+                    
+                    <!-- STUDENT ID COLUMN HEADER -->
+                    <th class="cursor-pointer bg-[#00B388] text-white py-1 px-1 border border-gray-300"
+                        onclick="sortTableByColumn('student-table', 0)">
+                        Student ID
+                        <svg class="sort-icon inline w-4 h-4 ml-1 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path class="asc-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                        <path class="desc-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </th>
+                    
+                    <!-- ACTIONS COLUMN HEADER -->
+                    <th class="bg-[#00B388] text-white py-1 px-0 border border-gray-300">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr x-show="search === '' || '{{ student.UID }} {{ student.fname }} {{ student.lname }}'.toLowerCase().includes(search.toLowerCase())" class="hover:bg-gray-50">
+                    <td class="py-2 px-2 border border-gray-300 text-center">{{ forloop.counter }}</td>
+                    <td class="py-2 px-4 border border-gray-300">{{ student.lname }}, {{ student.fname }}</td> <!-- Name before Student ID -->
+                    <td class="py-2 px-1 border border-gray-300">{{ student.UID }}</td> <!-- Student ID column -->
+                    <td class="py-2 px-1 border border-gray-300 flex justify-center gap-2">
+                        <!--  Edit student Info  -->
+                        <button type="button" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
+                        onclick="openEditStudentModal('{{ student.fname }}', '{{ student.lname }}', '{% url 'edit_student' course.id student.UID %}')"
+                        title="Edit Student Info">
+                        <img src="{% static 'images/editicon.png' %}" alt="Edit Icon" class="h-5 w-5">
+                        </button>
+                        <!--  Remove student from course  -->
+                        {% if student.UID %}
+                        <form method="POST" action="{% url 'remove_student' course.id student.UID %}" class="inline"
+                              onsubmit="return confirm('Are you sure you want to remove this student?');">
+                            {% csrf_token %}
+                            <!-- <button class="bg-red-600 hover:underline text-white py-1 px-3 rounded transition duration-200" type="submit"> -->
+                            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded" type="submit" title="Remove Student from Course">
+                            <img src="{% static 'images/deleteicon.png' %}" alt="Delete Icon" class="h-5 w-5">
+                            </button>
+                        </form>
+
+                        {% else %}
+                        <p class="text-red-500">Error: Student ID missing</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="py-4 px-4 text-gray-500 italic text-center border border-gray-300">
+                        No students found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form method="POST" action="{% url 'remove_all_students' course.id %}" class="mt-7"
+                onsubmit="return confirm('Are you sure you want to remove all students from this course?');">
+            {% csrf_token %}
+            <button class="bg-red-600 hover:underline text-white py-1 px-3 rounded transition duration-200" type="submit">
+                Remove All
+            </button>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="{% static 'js/table-sort.js' %}"></script>
+    <script src="{% static 'js/student-page.js' %}"></script>
+
+    <!-- Add custom CSS for fixed table headers -->
+    <style>
+        /* This will ensure the table header stays fixed while the content scrolls */
+        #student-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: #00B388; /* Optional: to match your header color */
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login Page{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto py-16 max-w-sm">
+
+    <!-- Title -->
+    <div class="text-center">
+      <h1 class="text-2xl font-bold text-gray-800">Log In</h1>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+      <ul class="space-y-2">
+        {% for message in messages %}
+          <li class="text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
+            {{ message }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <!-- Form -->
+    <form method="POST" class="space-y-4" autocomplete="off">
+      {% csrf_token %}
+
+      <!-- Email -->
+      <div>
+        <label for="id_email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+        <input
+          type="email"
+          name="email"
+          id="id_email"
+          placeholder="you@example.com"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          required
+        >
+      </div>
+
+      <!-- Password -->
+      <div class="relative">
+		<label for="id_password"
+			   class="block text-sm font-medium text-gray-700 mb-1">
+		  Password
+		</label>
+        <input autocomplete="new-password"
+			type="password"
+			name="password"
+			id="id_password"
+			placeholder="••••••••"
+			class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+			required
+			>
+        <button
+          type="button"
+          class="absolute inset-y-0 right-3 flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full shadow-sm hover:bg-indigo-50 transition"
+          onclick="togglePwd('id_password', this)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 eye-icon text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 eye-off-icon text-gray-500 hidden" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8"/>
+            <path d="M1 1l22 22"/>
+            <path d="M9.88 9.88a3 3 0 004.24 4.24"/>
+            <path d="M14.12 14.12A3 3 0 019.88 9.88"/>
+          </svg>
+        </button>
+      </div>
+
+	    <!-- Forgot password link -->
+    <div class="text-right mb-4">
+    	<a href="{% url 'password_reset' %}"
+        	class="text-sm text-indigo-600 hover:underline">
+       		Forgot password?
+     	</a>
+    </div>
+
+      <!-- Submit -->
+      <button
+		type="submit"
+		class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-full transition"
+      >
+        Login
+      </button>
+
+      <!-- Register link -->
+      <p class="text-center text-sm text-gray-600">
+        Don’t have an account?
+        <a href="{% url 'registerPage' %}" class="text-indigo-600 hover:underline">Register Here</a>
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  function togglePwd(fieldId, btn) {
+    const inp  = document.getElementById(fieldId);
+    const show = inp.type === 'password';
+    inp.type   = show ? 'text' : 'password';
+    btn.querySelector('.eye-icon')   .classList.toggle('hidden', !show);
+    btn.querySelector('.eye-off-icon').classList.toggle('hidden', show);
+  }
+</script>
+{% endblock scripts %}
